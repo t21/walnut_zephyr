@@ -4,6 +4,12 @@ set(BOARD_ROOT ${CMAKE_CURRENT_LIST_DIR})
 
 set(BOARD walnut)
 
+if(NOT BOARD_VARIANT)
+    set(BOARD_VARIANT climate)
+endif()
+
+add_definitions(-DBOARD_VARIANT=${BOARD_VARIANT})
+
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(NONE)
 

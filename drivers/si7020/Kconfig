@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2016 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig SI7020
+	bool
+	prompt "Si7020 Temperature Sensor"
+	default n
+	depends on I2C
+	help
+	  Enable driver for the Si7020 temperature sensor.
+
+if SI7020
+config SI7020_NAME
+	string
+	prompt "Driver name"
+	default "Si7020"
+	help
+	  Device name with which the Si7020 sensor is identified.
+
+config SI7020_I2C_MASTER_DEV_NAME
+	string
+	prompt "I2C Master"
+	default "I2C_0"
+	help
+	  The device name of the I2C master device to which the Si7020
+	  chip is connected.
+
+endif

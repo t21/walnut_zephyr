@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2016 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig TSL4531
+	bool
+	prompt "TSL4531 Ambient Light Sensor"
+	default n
+	depends on I2C
+	help
+	  Enable driver for the TSL4531 ambient light sensor.
+
+if TSL4531
+config TSL4531_NAME
+	string
+	prompt "Driver name"
+	default "TSL4531"
+	help
+	  Device name with which the TSL4531 sensor is identified.
+
+config TSL4531_I2C_MASTER_DEV_NAME
+	string
+	prompt "I2C Master"
+	default "I2C_0"
+	help
+	  The device name of the I2C master device to which the TSL4531
+	  chip is connected.
+
+endif

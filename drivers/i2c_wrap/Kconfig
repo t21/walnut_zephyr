@@ -1,0 +1,32 @@
+#
+# Copyright (c) 2016 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig I2C_WRAP
+	bool
+	prompt "Ambient Light Sensor Power via GPIO"
+	default n
+	depends on GPIO
+	depends on I2C
+	help
+	  Enable driver for the Si7020 temperature sensor.
+
+if I2C_WRAP
+config I2C_WRAP_NAME
+	string
+	prompt "Driver name"
+	default "i2c_wrap"
+	help
+	  Device name with which the Si7020 sensor is identified.
+
+config AL_SENS_POW_GPIO_DEV_NAME
+	string
+	prompt "GPIO port"
+	default "GPIO_0"
+	help
+	  The device name of the I2C master device to which the Si7020
+	  chip is connected.
+
+endif

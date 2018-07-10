@@ -1,0 +1,1 @@
+zephyr_sources_ifdef(CONFIG_I2C_WRAP i2c_wrap.c)

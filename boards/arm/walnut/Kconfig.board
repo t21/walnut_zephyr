@@ -1,0 +1,9 @@
+# Kconfig - nRF51 PCA10028 board configuration
+#
+# Copyright (c) 2016 Linaro Limited.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_WALNUT
+	bool "Walnut"
+	depends on SOC_NRF51822_QFAA

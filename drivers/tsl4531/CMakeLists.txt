@@ -1,0 +1,2 @@
+zephyr_sources_ifdef(CONFIG_TSL4531 tsl4531.c)
+zephyr_sources_ifdef(CONFIG_TSL4531_TRIGGER tsl4531_trigger.c)

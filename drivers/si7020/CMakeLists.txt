@@ -1,0 +1,2 @@
+zephyr_sources_ifdef(CONFIG_SI7020 si7020.c)
+zephyr_sources_ifdef(CONFIG_SI7020_TRIGGER si7020_trigger.c)

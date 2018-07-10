@@ -273,7 +273,7 @@ function flash {
     if [ -f $FILE_TO_FLASH ]
     then
         nrfjprog --program $FILE_TO_FLASH --sectorerase || exit 1
-        nrfjprog -r || exit 1
+        nrfjprog --pinreset || exit 1
     else
         echo "File \"$FILE_TO_FLASH\" does not exist."
         exit 0

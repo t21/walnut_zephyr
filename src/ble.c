@@ -30,6 +30,13 @@
 #define DEVICE_NAME				CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN				(sizeof(DEVICE_NAME) - 1)
 
+#ifndef BUILD_VERSION
+#define BUILD_VERSION UNKNOWN
+#endif
+
+#define DEVICE_SOFTWARE_VERSION     STRINGIFY(BUILD_VERSION)
+#define DEVICE_HARDWARE_VERSION     DEVICE_NAME BOARD_VARIANT
+
 /* Sensor Internal Update Interval [seconds] */
 #define SENSOR_1_UPDATE_IVAL			5
 #define SENSOR_2_UPDATE_IVAL			12
@@ -53,17 +60,22 @@
 
 
 #define ESS_ADV_SLOW BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONNECTABLE, \
-				       BT_GAP_ADV_SLOW_INT_MIN, \
-				       BT_GAP_ADV_SLOW_INT_MAX)
+                       BT_GAP_ADV_SLOW_INT_MIN, \
+                       BT_GAP_ADV_SLOW_INT_MAX)
 
 #define ESS_ADV_FAST_1 BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONNECTABLE, \
-				       BT_GAP_ADV_FAST_INT_MIN_1, \
-				       BT_GAP_ADV_FAST_INT_MAX_1)
+                       BT_GAP_ADV_FAST_INT_MIN_1, \
+                       BT_GAP_ADV_FAST_INT_MAX_1)
 
 #define ESS_ADV_FAST_2 BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONNECTABLE, \
-				       BT_GAP_ADV_FAST_INT_MIN_2, \
-				       BT_GAP_ADV_FAST_INT_MAX_2)
+                       BT_GAP_ADV_FAST_INT_MIN_2, \
+                       BT_GAP_ADV_FAST_INT_MAX_2)
 
+// Default Device Information Service data
+static dis_data_t dis_data = {
+    .sw_rev = DEVICE_SOFTWARE_VERSION,
+    .hw_rev = DEVICE_HARDWARE_VERSION,
+};
 
 // static inline void int_to_le24(u32_t value, u8_t *u24)
 // {
@@ -380,7 +392,8 @@ static void bt_ready(int err)
     SYS_LOG_INF("Bluetooth initialized");
 
     // ToDo: Set up DIS
-    dis_init(CONFIG_SOC, "ACME");
+    // dis_init(CONFIG_SOC, "ACME");
+    dis_init(&dis_data);
     ess_init();
     bas_init();
 

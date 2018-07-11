@@ -8,12 +8,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef _DIS_H_
+#define _DIS_H_
 
-void dis_init(const char *model, const char *manuf);
+typedef struct {
+    char *sw_rev;
+    char *hw_rev;
+} dis_data_t;
 
-#ifdef __cplusplus
-}
-#endif
+void dis_init(dis_data_t *dis_data);
+
+#endif  /* _DIS_H_ */

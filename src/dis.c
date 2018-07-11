@@ -22,41 +22,66 @@
 #include <bluetooth/uuid.h>
 #include <bluetooth/gatt.h>
 
-static const char *dis_model;
-static const char *dis_manuf;
+#include "dis.h"
 
-static ssize_t read_model(struct bt_conn *conn,
-			  const struct bt_gatt_attr *attr, void *buf,
-			  u16_t len, u16_t offset)
-{
-	return bt_gatt_attr_read(conn, attr, buf, len, offset, dis_model,
-				 strlen(dis_model));
-}
+// Device Information Service data
+static dis_data_t *dis;
 
-static ssize_t read_manuf(struct bt_conn *conn,
-			  const struct bt_gatt_attr *attr, void *buf,
-			  u16_t len, u16_t offset)
-{
-	return bt_gatt_attr_read(conn, attr, buf, len, offset, dis_manuf,
-				 strlen(dis_manuf));
-}
+// Function prototype for reading software version
+static ssize_t read_sw_vers(struct bt_conn *conn,
+              const struct bt_gatt_attr *attr, void *buf,
+              u16_t len, u16_t offset);
+
+// Function prototype for reading hardware version
+static ssize_t read_hw_vers(struct bt_conn *conn,
+              const struct bt_gatt_attr *attr, void *buf,
+              u16_t len, u16_t offset);
 
 /* Device Information Service Declaration */
 static struct bt_gatt_attr attrs[] = {
-	BT_GATT_PRIMARY_SERVICE(BT_UUID_DIS),
-	BT_GATT_CHARACTERISTIC(BT_UUID_DIS_MODEL_NUMBER, BT_GATT_CHRC_READ,
-			       BT_GATT_PERM_READ, read_model, NULL, NULL),
-	BT_GATT_CHARACTERISTIC(BT_UUID_DIS_MANUFACTURER_NAME,
-			       BT_GATT_CHRC_READ, BT_GATT_PERM_READ,
-			       read_manuf, NULL, NULL),
+    BT_GATT_PRIMARY_SERVICE(BT_UUID_DIS),
+    BT_GATT_CHARACTERISTIC(BT_UUID_DIS_SOFTWARE_REVISION,
+                   BT_GATT_CHRC_READ, BT_GATT_PERM_READ,
+                   read_sw_vers, NULL, NULL),
+    BT_GATT_CHARACTERISTIC(BT_UUID_DIS_HARDWARE_REVISION,
+                   BT_GATT_CHRC_READ, BT_GATT_PERM_READ,
+                   read_hw_vers, NULL, NULL),
 };
-
 static struct bt_gatt_service dis_svc = BT_GATT_SERVICE(attrs);
 
-void dis_init(const char *model, const char *manuf)
-{
-	dis_model = model;
-	dis_manuf = manuf;
 
-	bt_gatt_service_register(&dis_svc);
+/**
+* @private
+* @brief Callback to read the software version characteristic
+*/
+static ssize_t read_sw_vers(struct bt_conn *conn,
+              const struct bt_gatt_attr *attr, void *buf,
+              u16_t len, u16_t offset)
+{
+    return bt_gatt_attr_read(conn, attr, buf, len, offset, dis->sw_rev,
+                 strlen(dis->sw_rev));
+}
+
+/**
+* @private
+* @brief Callback to read the hardware version characteristic
+*/
+static ssize_t read_hw_vers(struct bt_conn *conn,
+              const struct bt_gatt_attr *attr, void *buf,
+              u16_t len, u16_t offset)
+{
+    return bt_gatt_attr_read(conn, attr, buf, len, offset, dis->hw_rev,
+                 strlen(dis->hw_rev));
+}
+
+
+/****************************************************************************
+* Public Function Definitions
+***************************************************************************/
+
+void dis_init(dis_data_t *dis_data)
+{
+    dis = dis_data;
+
+    bt_gatt_service_register(&dis_svc);
 }

@@ -58,14 +58,14 @@ void bp_sens_meas(void)
 
 void bp_sens_init(void)
 {
-#ifdef CONFIG_BME280
-    bmp280_dev = device_get_binding(CONFIG_BME280_DEV_NAME);
+#ifdef CONFIG_BMP280
+    bmp280_dev = device_get_binding(CONFIG_BMP280_DEV_NAME);
     if (bmp280_dev == NULL) {
-        SYS_LOG_ERR("Failed to get pointer to %s device!", CONFIG_BME280_DEV_NAME);
+        SYS_LOG_ERR("Failed to get pointer to %s device!", CONFIG_BMP280_DEV_NAME);
     }
 
     k_work_init(&meas_work, meas_work_handler);
     k_timer_init(&meas_timer, meas_timer_handler, NULL);
-    k_timer_start(&meas_timer, K_SECONDS(1), K_SECONDS(60));
+    k_timer_start(&meas_timer, K_SECONDS(5), K_SECONDS(60));
 #endif
 }

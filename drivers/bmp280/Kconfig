@@ -1,0 +1,156 @@
+# Kconfig.bmp280 - BMP280 temperature and pressure sensor configuration options
+
+#
+# Copyright (c) 2016 Intel Corporation
+# Copyright (c) 2017 IpTronix S.r.l.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+menuconfig BMP280
+	bool "BMP280 sensor"
+	depends on I2C || SPI
+	default	n
+	help
+	 Enable driver for BMP280 I2C-based or SPI-based temperature and pressure sensor.
+
+config BMP280_DEV_NAME
+	string "BMP280 device name"
+	depends on BMP280
+	default "BMP280"
+
+choice
+	prompt "BMP280 device select"
+	depends on BMP280
+	default BMP280_DEV_TYPE_I2C
+	help
+	  Select interface to communicate with BMP280 sensor. This sensor can communicate
+	  with both SPI and I2C. I2C is the default, select SPI if you sensor is connected
+	  via the SPI interface.
+
+config BMP280_DEV_TYPE_SPI
+	depends on SPI
+	bool "SPI"
+config BMP280_DEV_TYPE_I2C
+	depends on I2C
+	bool "I2C"
+endchoice
+
+config BMP280_I2C_ADDR
+	hex "BMP280 I2C slave address"
+	default 0x76
+	depends on BMP280 && BMP280_DEV_TYPE_I2C
+	help
+	  Specify the I2C slave address for the BMP280.
+
+	  0x76: Ground
+	  0x77: VCC
+
+config BMP280_I2C_MASTER_DEV_NAME
+	string "I2C master where BMP280 is connected"
+	depends on BMP280 && BMP280_DEV_TYPE_I2C
+	default "I2C_0"
+	help
+	 Specify the device name of the I2C master device to which BMP280 is
+	 connected.
+
+config BMP280_SPI_DEV_NAME
+	string "SPI device where BMP280 is connected"
+	depends on BMP280 && BMP280_DEV_TYPE_SPI
+	default "SPI_0"
+	help
+	 Specify the device name of the SPI device to which BMP280 is
+	 connected.
+
+config BMP280_SPI_DEV_SLAVE
+	int "SPI Slave Select where BMP280 is connected"
+	depends on BMP280 && BMP280_DEV_TYPE_SPI
+	default 3
+	help
+	 Specify the Slave Select pin of the SPI device to which BMP280 CS is
+	 connected.
+
+menu "Attributes"
+	depends on BMP280
+
+choice
+	prompt "BMP280 temperature oversampling"
+	depends on BMP280
+	default BMP280_TEMP_OVER_2X
+	help
+	  Select temperature oversampling for the BMP280 sensor.  Higher values
+	  lead to more accurate readings, but higher power consumption.
+config BMP280_TEMP_OVER_1X
+	bool "x1"
+config BMP280_TEMP_OVER_2X
+	bool "x2"
+config BMP280_TEMP_OVER_4X
+	bool "x4"
+config BMP280_TEMP_OVER_8X
+	bool "x8"
+config BMP280_TEMP_OVER_16X
+	bool "x16"
+endchoice
+
+choice
+	prompt "BMP280 pressure oversampling"
+	depends on BMP280
+	default BMP280_PRESS_OVER_16X
+	help
+	  Select pressure oversampling for the BMP280 sensor.  Higher values
+	  lead to more accurate readings, but higher power consumption.
+config BMP280_PRESS_OVER_1X
+	bool "x1"
+config BMP280_PRESS_OVER_2X
+	bool "x2"
+config BMP280_PRESS_OVER_4X
+	bool "x4"
+config BMP280_PRESS_OVER_8X
+	bool "x8"
+config BMP280_PRESS_OVER_16X
+	bool "x16"
+endchoice
+
+choice
+	prompt "BMP280 standby time"
+	depends on BMP280
+	default BMP280_STANDBY_1000MS
+	help
+	  Select standby time between measurements for the BMP280 sensor.
+	  Higher values lead to lower power consumption.
+config BMP280_STANDBY_05MS
+	bool "0.5ms"
+config BMP280_STANDBY_62MS
+	bool "62.5ms"
+config BMP280_STANDBY_125MS
+	bool "125ms"
+config BMP280_STANDBY_250MS
+	bool "250ms"
+config BMP280_STANDBY_500MS
+	bool "500ms"
+config BMP280_STANDBY_1000MS
+	bool "1000ms"
+config BMP280_STANDBY_2000MS
+	bool "2000ms BMP280"
+config BMP280_STANDBY_4000MS
+	bool "4000ms BMP280"
+endchoice
+
+choice
+	prompt "BMP280 filter coefficient"
+	depends on BMP280
+	default BMP280_FILTER_4
+	help
+	  Select the filter coefficient for the BMP280 sensor.
+config BMP280_FILTER_OFF
+	bool "filter off"
+config BMP280_FILTER_2
+	bool "2"
+config BMP280_FILTER_4
+	bool "4"
+config BMP280_FILTER_8
+	bool "8"
+config BMP280_FILTER_16
+	bool "16"
+endchoice
+
+endmenu

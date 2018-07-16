@@ -52,8 +52,9 @@ config I2C_NRF5_0_GPIO_SDA_PIN
 
 endif # I2C_NRF5
 
+source ../walnut_zephyr/drivers/i2c_wrap/Kconfig
 source ../walnut_zephyr/drivers/si7020/Kconfig
 source ../walnut_zephyr/drivers/tsl4531/Kconfig
-source ../walnut_zephyr/drivers/i2c_wrap/Kconfig
+source ../walnut_zephyr/drivers/bmp280/Kconfig
 
 endif # BOARD_WALNUT

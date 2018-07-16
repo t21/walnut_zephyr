@@ -114,5 +114,5 @@ void t_rh_sens_init(t_rh_meas_cb_t callback)
 
     k_work_init(&meas_work, meas_work_handler);
     k_timer_init(&meas_timer, meas_timer_handler, NULL);
-    k_timer_start(&meas_timer, K_SECONDS(1), K_SECONDS(rh_sensor_data.meas_interval));
+    k_timer_start(&meas_timer, K_SECONDS(5), K_SECONDS(rh_sensor_data.meas_interval));
 }

@@ -48,11 +48,12 @@
 #define TSL45317_ID                 0x80
 
 
-#if (CONFIG_SYS_LOG_SENSOR_LEVEL == 4)
 static int check_id(struct device *dev)
 {
     int err;
     u8_t buf = TSL4531_CMD_ID;
+
+    i2c_wrap_sem_take(dev);
 
     err = i2c_write_wrap(dev, &buf, 1, TSL4531_I2C_ADDR);
     if (err) {
@@ -65,6 +66,8 @@ static int check_id(struct device *dev)
         SYS_LOG_ERR("I2C read failed!");
         return -1;
     }
+
+    i2c_wrap_sem_give(dev);
 
     // Filter out reserved bits
     buf &= 0xF0;
@@ -86,7 +89,6 @@ static int check_id(struct device *dev)
 
     return 0;
 }
-#endif
 
 // static int set_resolution(struct device *dev)
 // {
@@ -177,13 +179,11 @@ static int tsl4531_init(struct device *dev)
         return -EINVAL;
     }
 
-#if (CONFIG_SYS_LOG_SENSOR_LEVEL == 4)
     int err = check_id(drv_data->i2c_wrap);
     if (err) {
         SYS_LOG_ERR("TSL4531 device not found");
         return -EINVAL;
     }
-#endif
 
     // set_resolution(drv_data->i2c_wrap);
 

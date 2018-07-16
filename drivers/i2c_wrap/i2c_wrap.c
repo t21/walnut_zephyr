@@ -184,10 +184,10 @@ static int i2c_wrap_init(struct device *dev)
 
     k_sem_init(&pow_sem, AL_SENSOR_MAX_NUM_USERS, AL_SENSOR_MAX_NUM_USERS);
 
-    drv_data->i2c = device_get_binding(CONFIG_SI7020_I2C_MASTER_DEV_NAME);
+    drv_data->i2c = device_get_binding(CONFIG_I2C_0_NAME);
     if (drv_data->i2c == NULL) {
         SYS_LOG_ERR("Failed to get pointer to %s device!",
-                CONFIG_SI7020_I2C_MASTER_DEV_NAME);
+                CONFIG_I2C_0_NAME);
         return -EINVAL;
     }
 

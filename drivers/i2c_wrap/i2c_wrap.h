@@ -44,7 +44,6 @@ struct i2c_wrap_driver_api {
 };
 
 
-
 int i2c_write_wrap(struct device *dev, u8_t *buf,
                 u32_t num_bytes, u16_t addr);
 

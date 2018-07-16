@@ -14,4 +14,8 @@ struct tsl4531_data {
     u16_t al_sample;
 };
 
+#define SYS_LOG_DOMAIN "tsl4531"
+#define SYS_LOG_LEVEL CONFIG_SYS_LOG_SENSOR_LEVEL
+#include <logging/sys_log.h>
+
 #endif /* _SENSOR_TSL4531 */

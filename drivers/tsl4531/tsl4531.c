@@ -14,12 +14,9 @@
 
 #include "tsl4531.h"
 #include "../i2c_wrap/i2c_wrap.h"
+// #include "i2c_wrap.h"
 
-#define SYS_LOG_DOMAIN "tsl4531"
-#define SYS_LOG_LEVEL CONFIG_SYS_LOG_SENSOR_LEVEL
-#include <logging/sys_log.h>
-
-#define ALS_VDD_GPIO_PIN_NUM 20
+// #define ALS_VDD_GPIO_PIN_NUM 20
 
 #define TSL4531_I2C_ADDR            0x29
 
@@ -51,16 +48,20 @@
 #define TSL45317_ID                 0x80
 
 
+#if (CONFIG_SYS_LOG_SENSOR_LEVEL == 4)
 static int check_id(struct device *dev)
 {
+    int err;
     u8_t buf = TSL4531_CMD_ID;
 
-    if (i2c_write_wrap(dev, &buf, 1, TSL4531_I2C_ADDR)) {
+    err = i2c_write_wrap(dev, &buf, 1, TSL4531_I2C_ADDR);
+    if (err) {
         SYS_LOG_ERR("I2C write failed!");
         return -1;
     }
 
-    if (i2c_read_wrap(dev, &buf, 1, TSL4531_I2C_ADDR)) {
+    err = i2c_read_wrap(dev, &buf, 1, TSL4531_I2C_ADDR);
+    if (err) {
         SYS_LOG_ERR("I2C read failed!");
         return -1;
     }
@@ -70,17 +71,22 @@ static int check_id(struct device *dev)
 
     SYS_LOG_DBG("ID:0x%02x", buf);
 
-    if (buf != TSL45311_ID &&
-        buf != TSL45313_ID &&
-        buf != TSL45315_ID &&
-        buf != TSL45317_ID)
-    {
+    if (buf == TSL45311_ID) {
+        SYS_LOG_DBG("TSL45311 found");
+    } else if (buf == TSL45313_ID) {
+        SYS_LOG_DBG("TSL45313 found");
+    } else if (buf == TSL45315_ID) {
+        SYS_LOG_DBG("TSL45315 found");
+    } else if (buf == TSL45317_ID) {
+        SYS_LOG_DBG("TSL45317 found");
+    } else {
         SYS_LOG_ERR("Error: TSL4531x chip id does not match");
         return -1;
     }
 
     return 0;
 }
+#endif
 
 // static int set_resolution(struct device *dev)
 // {
@@ -162,6 +168,8 @@ static int tsl4531_init(struct device *dev)
 {
     struct tsl4531_data *drv_data = dev->driver_data;
 
+    SYS_LOG_INF("Init TSL4531");
+
     drv_data->i2c_wrap = device_get_binding(CONFIG_I2C_WRAP_NAME);
     if (drv_data->i2c_wrap == NULL) {
         SYS_LOG_ERR("Failed to get pointer to %s device!",
@@ -169,7 +177,14 @@ static int tsl4531_init(struct device *dev)
         return -EINVAL;
     }
 
-    check_id(drv_data->i2c_wrap);
+#if (CONFIG_SYS_LOG_SENSOR_LEVEL == 4)
+    int err = check_id(drv_data->i2c_wrap);
+    if (err) {
+        SYS_LOG_ERR("TSL4531 device not found");
+        return -EINVAL;
+    }
+#endif
+
     // set_resolution(drv_data->i2c_wrap);
 
     return 0;

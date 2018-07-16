@@ -144,5 +144,5 @@ void fg_init(fg_update_cb_t cb)
 
     k_work_init(&meas_work, meas_work_handler);
     k_timer_init(&meas_timer, meas_timer_handler, NULL);
-    k_timer_start(&meas_timer, K_SECONDS(1), K_SECONDS(FG_MEAS_INTERVAL));
+    k_timer_start(&meas_timer, K_SECONDS(5), K_SECONDS(FG_MEAS_INTERVAL));
 }

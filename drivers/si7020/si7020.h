@@ -15,4 +15,8 @@ struct si7020_data {
     u16_t rh_sample;
 };
 
+#define SYS_LOG_DOMAIN "si7020"
+#define SYS_LOG_LEVEL CONFIG_SYS_LOG_SENSOR_LEVEL
+#include <logging/sys_log.h>
+
 #endif /* _SENSOR_SI7020 */

@@ -13,11 +13,6 @@
 #include "si7020.h"
 #include "../i2c_wrap/i2c_wrap.h"
 
-#define SYS_LOG_DOMAIN "si7020"
-// #define SYS_LOG_LEVEL CONFIG_SYS_LOG_SENSOR_LEVEL
-#define SYS_LOG_LEVEL 1
-#include <logging/sys_log.h>
-
 
 #define SI7020_I2C_ADDR    0x40
 
@@ -181,13 +176,6 @@ static int si7020_init(struct device *dev)
 
     SYS_LOG_INF("Init Si7020");
 
-    // drv_data->i2c = device_get_binding(CONFIG_SI7020_I2C_MASTER_DEV_NAME);
-    // if (drv_data->i2c == NULL) {
-    //     SYS_LOG_ERR("Failed to get pointer to %s device!",
-    //             CONFIG_SI7020_I2C_MASTER_DEV_NAME);
-    //     return -EINVAL;
-    // }
-
     drv_data->i2c_wrap = device_get_binding(CONFIG_I2C_WRAP_NAME);
     if (drv_data->i2c_wrap == NULL) {
         SYS_LOG_ERR("Failed to get pointer to %s device!",
@@ -195,13 +183,6 @@ static int si7020_init(struct device *dev)
         return -EINVAL;
     }
 
-    // struct device *als_pow_dev = (struct device *)drv_data->als_pow;
-    // const struct al_sens_pow_driver_api *api = (struct al_sens_pow_driver_api *)als_pow_dev->driver_api;
-
-    // api->enable(als_pow_dev);
-    // w_sem_take(als_pow_dev);
-
-    // al_sensor_power_enable();
     reset(drv_data->i2c_wrap);
     check_id(drv_data->i2c_wrap);
     set_resolution(drv_data->i2c_wrap);

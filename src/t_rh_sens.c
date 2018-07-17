@@ -18,6 +18,7 @@
 #include "t_rh_sens.h"
 #include "ble.h"
 #include "gdfs.h"
+#include "ess.h"
 
 #define CONFIG_SYS_LOG_T_RH_SENSOR_LEVEL 3
 
@@ -35,7 +36,11 @@ static t_rh_meas_cb_t meas_cb;
 
 
 static gdfs_sensor_data_t default_sensor_data = {
-    .meas_interval = 60,
+    .sampling_func    = ESS_SAMPL_FUNC_INSTANTANEOUS,
+    .meas_period      = ESS_MEAS_PERIOD_NOT_IN_USE,
+    .update_interval  = 60,
+    .application      = ESS_APPL_Air,
+    .meas_uncertainty = 2,
 };
 
 static void meas_work_handler(struct k_work *work);
@@ -104,15 +109,15 @@ void t_rh_sens_init(t_rh_meas_cb_t callback)
 
     err = gdfs_get_sensor_data(GDFS_SENSOR_TEMPERATURE, &t_sensor_data);
     if (err == -ENOENT) {
-        gdfs_set_sensor_data(GDFS_SENSOR_HUMIDITY, &default_sensor_data);
-        gdfs_get_sensor_data(GDFS_SENSOR_HUMIDITY, &t_sensor_data);
+        gdfs_set_sensor_data(GDFS_SENSOR_TEMPERATURE, &default_sensor_data);
+        gdfs_get_sensor_data(GDFS_SENSOR_TEMPERATURE, &t_sensor_data);
     }
 
-    if (rh_sensor_data.meas_interval == t_sensor_data.meas_interval) {
+    if (rh_sensor_data.update_interval == t_sensor_data.update_interval) {
 
     }
 
     k_work_init(&meas_work, meas_work_handler);
     k_timer_init(&meas_timer, meas_timer_handler, NULL);
-    k_timer_start(&meas_timer, K_SECONDS(5), K_SECONDS(rh_sensor_data.meas_interval));
+    k_timer_start(&meas_timer, K_SECONDS(5), K_SECONDS(rh_sensor_data.update_interval));
 }

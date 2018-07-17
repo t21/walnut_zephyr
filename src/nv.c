@@ -1,19 +1,29 @@
+/**
+ *
+ *
+ */
+
+/****************************************************************************
+* Include Directives
+***************************************************************************/
 
 #include <zephyr.h>
-// #include <misc/reboot.h>
 #include <board.h>
-#include <device.h>
-#include <string.h>
 #include <nvs/nvs.h>
 
-#include "gdfs.h"
+#include "nv.h"
 
-#define CONFIG_SYS_LOG_GDFS_LEVEL 1
-
-#define SYS_LOG_DOMAIN "gdfs"
-#define SYS_LOG_LEVEL CONFIG_SYS_LOG_GDFS_LEVEL
+#define CONFIG_SYS_LOG_NV_LEVEL 1
+#define SYS_LOG_DOMAIN "nv"
+#define SYS_LOG_LEVEL CONFIG_SYS_LOG_NV_LEVEL
 #include <logging/sys_log.h>
 
+
+/****************************************************************************
+* Preprocessor Directives
+***************************************************************************/
+
+// #define NV_TEST
 
 #define STORAGE_MAGIC 0xefbeadde // 0xdeadbeef
 
@@ -24,6 +34,11 @@
                               */
 #define NVS_MAX_ELEM_SIZE 256 /* Largest item that can be stored */
 
+
+/****************************************************************************
+* Private Type Declarations
+***************************************************************************/
+
 static struct nvs_fs fs = {
     .sector_size = NVS_SECTOR_SIZE,
     .sector_count = NVS_SECTOR_COUNT,
@@ -32,15 +47,34 @@ static struct nvs_fs fs = {
 };
 
 
-int gdfs_get_device_data(gdfs_device_data_t *data)
+/****************************************************************************
+* Private Data Definitions
+***************************************************************************/
+
+
+/****************************************************************************
+* Public Data Definitions
+***************************************************************************/
+
+
+/****************************************************************************
+* Private Function Definitions
+***************************************************************************/
+
+
+/****************************************************************************
+* Public Function Definitions
+***************************************************************************/
+
+int nv_get_device_data(nv_device_data_t *data)
 {
     int read_len = 0;
     uint8_t *buf = (uint8_t *)data;
-    int buf_len = sizeof(gdfs_device_data_t);
+    int buf_len = sizeof(nv_device_data_t);
 
     SYS_LOG_INF("Read device data");
 
-    read_len = nvs_read(&fs, GDFS_DEVICE_DATA, buf, buf_len);
+    read_len = nvs_read(&fs, NV_DEVICE_DATA, buf, buf_len);
     if (read_len == buf_len) {
         SYS_LOG_DBG("Read device data success");
     } else if (read_len > buf_len) {
@@ -63,15 +97,15 @@ int gdfs_get_device_data(gdfs_device_data_t *data)
     return 0;
 }
 
-int gdfs_set_device_data(const gdfs_device_data_t *data)
+int nv_set_device_data(const nv_device_data_t *data)
 {
     int write_len = 0;
     uint8_t *buf = (uint8_t *)data;
-    int buf_len = sizeof(gdfs_device_data_t);
+    int buf_len = sizeof(nv_device_data_t);
 
     SYS_LOG_INF("Write device data");
 
-    write_len = nvs_write(&fs, GDFS_DEVICE_DATA, buf, buf_len);
+    write_len = nvs_write(&fs, NV_DEVICE_DATA, buf, buf_len);
     if (write_len == buf_len) {
         SYS_LOG_DBG("Write device data success");
     } else if (write_len < 0) {
@@ -82,11 +116,11 @@ int gdfs_set_device_data(const gdfs_device_data_t *data)
     return 0;
 }
 
-int gdfs_get_sensor_data(gdfs_types_t sensor, gdfs_sensor_data_t *data)
+int nv_get_sensor_data(nv_types_t sensor, nv_sensor_data_t *data)
 {
     int read_len = 0;
     uint8_t *buf = (uint8_t *)data;
-    int buf_len = sizeof(gdfs_sensor_data_t);
+    int buf_len = sizeof(nv_sensor_data_t);
 
     SYS_LOG_INF("Read sensor%02d data", sensor);
 
@@ -114,11 +148,11 @@ int gdfs_get_sensor_data(gdfs_types_t sensor, gdfs_sensor_data_t *data)
 
 }
 
-int gdfs_set_sensor_data(gdfs_types_t sensor, const gdfs_sensor_data_t *data)
+int nv_set_sensor_data(nv_types_t sensor, const nv_sensor_data_t *data)
 {
     int write_len = 0;
     uint8_t *buf = (uint8_t *)data;
-    int buf_len = sizeof(gdfs_sensor_data_t);
+    int buf_len = sizeof(nv_sensor_data_t);
 
     SYS_LOG_INF("Write sensor%02d data", sensor);
 
@@ -133,27 +167,29 @@ int gdfs_set_sensor_data(gdfs_types_t sensor, const gdfs_sensor_data_t *data)
     return 0;
 }
 
-// static void gdfs_test(void) {
-//     int err = 0;
-//     gdfs_device_data_t device_data;
-//     gdfs_sensor_data_t sensor_data;
+static void nv_test(void) {
+#ifdef NV_TEST
+    int err = 0;
+    nv_device_data_t device_data;
+    nv_sensor_data_t sensor_data;
 
-//     err = gdfs_get_sensor_data(GDFS_SENSOR_HUMIDITY, &sensor_data);
-//     if (err == -ENOENT) {
-//         sensor_data.meas_interval = 100;
-//         gdfs_set_sensor_data(GDFS_SENSOR_HUMIDITY, &sensor_data);
-//         gdfs_get_sensor_data(GDFS_SENSOR_HUMIDITY, &sensor_data);
-//     }
+    err = nv_get_sensor_data(NV_SENSOR_HUMIDITY, &sensor_data);
+    if (err == -ENOENT) {
+        sensor_data.meas_interval = 100;
+        nv_set_sensor_data(NV_SENSOR_HUMIDITY, &sensor_data);
+        nv_get_sensor_data(NV_SENSOR_HUMIDITY, &sensor_data);
+    }
 
-//     err = gdfs_get_device_data(&device_data);
-//     if (err == -ENOENT) {
-//         device_data.adv_interval = 100;
-//         gdfs_set_device_data(&device_data);
-//         gdfs_get_device_data(&device_data);
-//     }
-// }
+    err = nv_get_device_data(&device_data);
+    if (err == -ENOENT) {
+        device_data.adv_interval = 100;
+        nv_set_device_data(&device_data);
+        nv_get_device_data(&device_data);
+    }
+#endif
+}
 
-int gdfs_init(void)
+int nv_init(void)
 {
     int err = 0;
 
@@ -165,7 +201,7 @@ int gdfs_init(void)
     nvs_clear(&fs);
     nvs_init(&fs, FLASH_DEV_NAME, STORAGE_MAGIC);
 
-    // gdfs_test();
+    nv_test();
 
     return 0;
 }

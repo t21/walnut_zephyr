@@ -15,7 +15,11 @@ typedef enum {
 } gdfs_types_t;
 
 typedef struct {
-    uint32_t meas_interval;
+    uint8_t sampling_func;
+    uint32_t meas_period;
+    uint32_t update_interval;
+    uint8_t application;
+    uint8_t meas_uncertainty;
 } gdfs_sensor_data_t;
 
 typedef struct {

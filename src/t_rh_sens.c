@@ -17,7 +17,7 @@
 
 #include "t_rh_sens.h"
 #include "ble.h"
-#include "gdfs.h"
+#include "nv.h"
 #include "ess.h"
 
 #define CONFIG_SYS_LOG_T_RH_SENSOR_LEVEL 3
@@ -35,7 +35,7 @@ static struct k_work meas_work;
 static t_rh_meas_cb_t meas_cb;
 
 
-static gdfs_sensor_data_t default_sensor_data = {
+static nv_sensor_data_t default_sensor_data = {
     .sampling_func    = ESS_SAMPL_FUNC_INSTANTANEOUS,
     .meas_period      = ESS_MEAS_PERIOD_NOT_IN_USE,
     .update_interval  = 60,
@@ -87,8 +87,8 @@ void t_rh_sens_meas(void)
 void t_rh_sens_init(t_rh_meas_cb_t callback)
 {
     int err = 0;
-    gdfs_sensor_data_t rh_sensor_data;
-    gdfs_sensor_data_t t_sensor_data;
+    nv_sensor_data_t rh_sensor_data;
+    nv_sensor_data_t t_sensor_data;
 
     meas_cb = callback;
 
@@ -101,16 +101,16 @@ void t_rh_sens_init(t_rh_meas_cb_t callback)
     // Needs to make one initial measurement for the device to enter sleep
     sensor_sample_fetch(si7020_dev);
 
-    err = gdfs_get_sensor_data(GDFS_SENSOR_HUMIDITY, &rh_sensor_data);
+    err = nv_get_sensor_data(NV_SENSOR_HUMIDITY, &rh_sensor_data);
     if (err == -ENOENT) {
-        gdfs_set_sensor_data(GDFS_SENSOR_HUMIDITY, &default_sensor_data);
-        gdfs_get_sensor_data(GDFS_SENSOR_HUMIDITY, &rh_sensor_data);
+        nv_set_sensor_data(NV_SENSOR_HUMIDITY, &default_sensor_data);
+        nv_get_sensor_data(NV_SENSOR_HUMIDITY, &rh_sensor_data);
     }
 
-    err = gdfs_get_sensor_data(GDFS_SENSOR_TEMPERATURE, &t_sensor_data);
+    err = nv_get_sensor_data(NV_SENSOR_TEMPERATURE, &t_sensor_data);
     if (err == -ENOENT) {
-        gdfs_set_sensor_data(GDFS_SENSOR_TEMPERATURE, &default_sensor_data);
-        gdfs_get_sensor_data(GDFS_SENSOR_TEMPERATURE, &t_sensor_data);
+        nv_set_sensor_data(NV_SENSOR_TEMPERATURE, &default_sensor_data);
+        nv_get_sensor_data(NV_SENSOR_TEMPERATURE, &t_sensor_data);
     }
 
     if (rh_sensor_data.update_interval == t_sensor_data.update_interval) {

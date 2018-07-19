@@ -16,8 +16,6 @@
 #include "../i2c_wrap/i2c_wrap.h"
 // #include "i2c_wrap.h"
 
-// #define ALS_VDD_GPIO_PIN_NUM 20
-
 #define TSL4531_I2C_ADDR            0x29
 
 /* Commands */

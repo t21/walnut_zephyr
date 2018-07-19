@@ -11,7 +11,7 @@
 #include <sensor.h>
 
 #include "fg.h"
-#include "gdfs.h"
+#include "nv.h"
 #include "ble.h"
 #include "ess.h"
 #include "t_rh_sens.h"
@@ -51,7 +51,7 @@ void main(void)
     SYS_LOG_INF("Starting app");
 
     fg_init(fg_update_cb);
-    gdfs_init();
+    nv_init();
     t_rh_sens_init(t_rh_meas_cb);
     als_init();
     bp_sens_init();

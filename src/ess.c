@@ -143,6 +143,9 @@ static ssize_t read_es_measurement(struct bt_conn *conn,
 static ssize_t read_valid_range(struct bt_conn *conn,
                      const struct bt_gatt_attr *attr, void *buf,
                      u16_t len, u16_t offset);
+static ssize_t read_valid_range_32(struct bt_conn *conn,
+                     const struct bt_gatt_attr *attr, void *buf,
+                     u16_t len, u16_t offset);
 static void temp_ccc_cfg_changed(const struct bt_gatt_attr *attr,
                  u16_t value);
 static void rh_ccc_cfg_changed(const struct bt_gatt_attr *attr,
@@ -152,6 +155,10 @@ static void al_ccc_cfg_changed(const struct bt_gatt_attr *attr,
 static void bp_ccc_cfg_changed(const struct bt_gatt_attr *attr,
                  u16_t value);
 static ssize_t read_trigger_setting(struct bt_conn *conn,
+                     const struct bt_gatt_attr *attr,
+                     void *buf, u16_t len,
+                     u16_t offset);
+static ssize_t read_trigger_setting_32(struct bt_conn *conn,
                      const struct bt_gatt_attr *attr,
                      void *buf, u16_t len,
                      u16_t offset);
@@ -218,9 +225,9 @@ static struct bt_gatt_attr ess_attrs[] = {
                read_es_measurement, NULL, &_baro_pressure.meas_desc),
     BT_GATT_DESCRIPTOR(BT_UUID_VALID_RANGE,
                     BT_GATT_PERM_READ,
-                    read_valid_range, NULL, &_baro_pressure),
+                    read_valid_range_32, NULL, &_baro_pressure),
     BT_GATT_DESCRIPTOR(BT_UUID_ES_TRIGGER_SETTING,
-               BT_GATT_PERM_READ, read_trigger_setting,
+               BT_GATT_PERM_READ, read_trigger_setting_32,
                NULL, &_baro_pressure),
     BT_GATT_CCC(_baro_pressure.ccc_cfg, bp_ccc_cfg_changed),
 };
@@ -328,12 +335,64 @@ static ssize_t read_valid_range(struct bt_conn *conn,
                  sizeof(tmp));
 }
 
+static ssize_t read_valid_range_32(struct bt_conn *conn,
+                     const struct bt_gatt_attr *attr, void *buf,
+                     u16_t len, u16_t offset)
+{
+    const struct ess_pressure_sensor *sensor = attr->user_data;
+    u32_t tmp[] = {sys_cpu_to_le32(sensor->lower_limit),
+              sys_cpu_to_le32(sensor->upper_limit)};
+
+    return bt_gatt_attr_read(conn, attr, buf, len, offset, tmp,
+                 sizeof(tmp));
+}
+
 static ssize_t read_trigger_setting(struct bt_conn *conn,
                      const struct bt_gatt_attr *attr,
                      void *buf, u16_t len,
                      u16_t offset)
 {
     const struct ess_sensor *sensor = attr->user_data;
+
+    switch (sensor->condition) {
+    /* Operand N/A */
+    case ESS_TRIGGER_INACTIVE:
+        /* fallthrough */
+    case ESS_VALUE_CHANGED:
+        return bt_gatt_attr_read(conn, attr, buf, len, offset,
+                     &sensor->condition,
+                     sizeof(sensor->condition));
+    /* Seconds */
+    case ESS_FIXED_TIME_INTERVAL:
+        /* fallthrough */
+    case ESS_NO_LESS_THAN_SPECIFIED_TIME: {
+            struct es_trigger_setting_seconds rp;
+
+            rp.condition = sensor->condition;
+            int_to_le24(sensor->seconds, rp.sec);
+
+            return bt_gatt_attr_read(conn, attr, buf, len, offset,
+                         &rp, sizeof(rp));
+        }
+    /* Reference value */
+    default: {
+            struct es_trigger_setting_reference rp;
+
+            rp.condition = sensor->condition;
+            rp.ref_val = sys_cpu_to_le16(sensor->ref_val);
+
+            return bt_gatt_attr_read(conn, attr, buf, len, offset,
+                         &rp, sizeof(rp));
+        }
+    }
+}
+
+static ssize_t read_trigger_setting_32(struct bt_conn *conn,
+                     const struct bt_gatt_attr *attr,
+                     void *buf, u16_t len,
+                     u16_t offset)
+{
+    const struct ess_pressure_sensor *sensor = attr->user_data;
 
     switch (sensor->condition) {
     /* Operand N/A */

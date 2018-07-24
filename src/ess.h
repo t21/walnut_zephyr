@@ -64,10 +64,10 @@ typedef enum {
 
 
 void ess_init(void);
-void ess_temperature_update(int16_t temperature);
-void ess_humidity_update(int16_t humidity);
-void ess_als_update(int16_t sensor_val);
-void ess_baro_press_update(uint32_t sensor_val);
+void ess_temperature_update(int16_t new_value);
+void ess_humidity_update(int16_t new_value);
+void ess_als_update(int16_t new_value);
+void ess_baro_press_update(uint32_t new_value);
 
 #ifdef __cplusplus
 }

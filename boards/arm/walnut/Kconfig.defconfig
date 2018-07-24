@@ -9,6 +9,9 @@ if BOARD_WALNUT
 config BOARD
 	default "walnut"
 
+config HAS_SEGGER_RTT
+	default y
+
 if GPIO_NRF5
 
 config GPIO_NRF5_P0

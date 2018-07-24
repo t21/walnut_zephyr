@@ -20,7 +20,7 @@
 #include "nv.h"
 #include "ess.h"
 
-#define CONFIG_SYS_LOG_T_RH_SENSOR_LEVEL 3
+#define CONFIG_SYS_LOG_T_RH_SENSOR_LEVEL 1
 
 #define SYS_LOG_DOMAIN "t_rh_sens"
 #define SYS_LOG_LEVEL CONFIG_SYS_LOG_T_RH_SENSOR_LEVEL

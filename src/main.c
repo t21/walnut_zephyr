@@ -46,6 +46,19 @@ static void t_rh_meas_cb(t_rh_meas_t *measurement)
     }
 }
 
+static void al_meas_cb(struct sensor_value *ambient_light)
+{
+    SYS_LOG_INF("AL:%d.%06d", ambient_light->val1, ambient_light->val2);
+    ble_update_ambient_light(sensor_value_to_double(ambient_light));
+}
+
+static void bp_meas_cb(struct sensor_value *baro_pressure)
+{
+    SYS_LOG_INF("AL:%d.%06d", baro_pressure->val1, baro_pressure->val2);
+    ble_update_baro_pressure(sensor_value_to_double(baro_pressure));
+}
+
+
 void main(void)
 {
     SYS_LOG_INF("Starting app");
@@ -53,8 +66,8 @@ void main(void)
     fg_init(fg_update_cb);
     nv_init();
     t_rh_sens_init(t_rh_meas_cb);
-    als_init();
-    bp_sens_init();
+    als_init(al_meas_cb);
+    bp_sens_init(bp_meas_cb);
     ble_init();
 
     while (1) {

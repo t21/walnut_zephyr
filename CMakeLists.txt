@@ -10,6 +10,14 @@ endif()
 
 add_definitions(-DBOARD_VARIANT=${BOARD_VARIANT})
 
+macro(set_conf_file)
+    if(EXISTS ${APPLICATION_SOURCE_DIR}/boards/arm/walnut/${BOARD}_${BOARD_VARIANT}.conf)
+        set(CONF_FILE "prj.conf ${APPLICATION_SOURCE_DIR}/boards/arm/walnut/${BOARD}_${BOARD_VARIANT}.conf")
+    else()
+        set(CONF_FILE "prj.conf")
+    endif()
+endmacro()
+
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(NONE)
 

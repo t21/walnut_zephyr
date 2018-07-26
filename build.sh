@@ -18,46 +18,24 @@ do
 key="$1"
 
 case $key in
-    clean)
+    clean | CLEAN )
     CLEAN=1
     shift
     ;;
-    CLEAN)
-    CLEAN=1
-    shift
-    ;;
-    boot)
-    BUILD_BOOTLOADER=1
-    shift
-    ;;
-    BOOT)
+    boot | BOOT )
     BUILD_BOOTLOADER=1
     shift
     ;;
     climate | CLIMATE )
     BUILD_FW=1
-    BOARD_VARIANT=CLIMATE
+    BOARD_VARIANT=climate
     shift
     ;;
-    evt2)
-    BUILD_FW=1
-    BOARD_VARIANT=EVT2
-    shift
-    ;;
-    EVT2)
-    BUILD_FW=1
-    BOARD_VARIANT=EVT2
-    shift
-    ;;
-    flash)
+    flash | FLASH )
     FLASH=1
     shift
     ;;
-    FLASH)
-    FLASH=1
-    shift
-    ;;
-    help)
+    help | HELP )
     HELP=1
     shift
     ;;
